@@ -1,6 +1,6 @@
 {
   "name": "read-spreadsheet",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Reads a Google spreadsheet document by ID and returns content as an array of objects",
   "main": "index.js",
   "engines": {
@@ -13,11 +13,10 @@
     "url": "https://github.com/vitaliimarushko/read-spreadsheet.git"
   },
   "keywords": [
-    "spreadsheet",
     "google",
+    "spreadsheet",
     "convert",
-    "json",
-    "csv"
+    "json"
   ],
   "dependencies": {
     "axios": "^0.21.1",
