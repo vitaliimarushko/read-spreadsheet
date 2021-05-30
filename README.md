@@ -6,13 +6,17 @@ Reads the first tab of a Google spreadsheet document and returns it as an array 
 
 The package represents a function with the following signature:
 ```
-readSpreadsheet(spreadsheetId[, throwable = false])  // returns promise
+readSpreadsheet(spreadsheetId[, options]);
 ```
 where:
-- `spreadsheetId` is the ID of a Google spreadsheet document. You can get it from here:
-   ![screenshot](docs/screenshot.png)
-  **Note:** This document must have **public** access.
-- `throwable` defines if it's needed to throw an exception or just return an empty array if some operation can't be completed; default: `false` 
+- `spreadsheetId` is the ID of a **public** Google spreadsheet document. You can get it from here:
+
+![screenshot](docs/screenshot.png)
+
+- `options` is an object which contain:
+  - `throwable` (optional) - defines if it's needed to throw an exception or just return an empty array if some operation can't be completed; default: `false`;
+  - `isCsv` (optional) - defines is content must be returned as CSV (if `true`) or JSON (if `false`); default: `false`;
+  - `isStream` (optional) - defines if content is represented as stream (if `true`) or stringified data (if `false`); default: `false`.
 
 # Usage
 

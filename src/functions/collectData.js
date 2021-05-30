@@ -1,13 +1,11 @@
-const http = require('http');
 const csv = require('csvtojson');
 const debug = require('./getDebug');
-const {ERROR} = require('../constants');
 
 /**
  * Internal handler of "error" signal
  */
 const handleError = (error, resolve, reject, throwable = false) => {
-  const errorMessage = error ? (error.message || error) : 'Error occurred while reading spreadsheet document';
+  const errorMessage = error instanceof Error ? error.message : 'Error occurred while reading spreadsheet document';
 
   debug(errorMessage);
 
@@ -30,27 +28,31 @@ const handleDone = (error, data, resolve, reject, throwable = false) => {
 };
 
 /**
- * Reads data from spreadsheet stream into JSON
+ * Reads data from spreadsheet stream into CSV or JSON.
  *
- * @param {IncomingMessage|Readable} spreadsheetStream readable stream to retrieve spreadsheet data
- * @param {boolean} throwable defines if it's needed to throw exception or just return some result if some operation is wrong; default: false
- * @returns {Promise<Array>} array of objects; every array item is row from spreadsheet
- * @throws {Promise<Error>} common error instance
+ * @param {IncomingMessage|Readable} spreadsheetStream readable stream to retrieve spreadsheet data;
+ * @param {{throwable?: boolean, isCsv?: boolean}} options contains custom parameters;
+ * @returns {Promise<Array>} array of objects; every array item is row from spreadsheet;
+ * @throws {Promise<Error>}
  */
-module.exports = (spreadsheetStream, throwable = false) => {
-  if (!(spreadsheetStream instanceof http.IncomingMessage)) {
-    return handleError(ERROR.NOT_STREAM, Promise.resolve, Promise.reject, throwable);
-  }
+module.exports = (spreadsheetStream, options) => {
+  const {
+    throwable = false,
+    isCsv = false,
+  } = options;
 
   return new Promise((resolve, reject) => {
     const data = [];
 
     try {
-      csv()
+      csv({
+        noheader: !!isCsv,
+        output: isCsv ? 'csv' : 'json',
+      })
         .fromStream(spreadsheetStream)
         .on('error', (error) => handleError(error, resolve, reject, throwable))
         .on('done', (error) => handleDone(error, data, resolve, reject, throwable))
-        .subscribe((jsonRow) => data.push(jsonRow));
+        .subscribe((chunk) => data.push(chunk));
     } catch (error) {
       return handleError(error, resolve, reject, throwable);
     }
