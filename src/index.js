@@ -2,13 +2,14 @@ const processError = require('./functions/processError');
 const requestContent = require('./functions/requestContent');
 const collectData = require('./functions/collectData');
 const createReadableStream = require('./functions/createReadableStream');
+const prepareGid = require('./functions/prepareGid');
 const {ERROR} = require('./constants');
 
 /**
  * Makes request to a Google spreadsheet document and retrieves its content.
  *
  * @param {string} spreadsheetId string ID which represents spreadsheet document;
- * @param {{throwable?: boolean, isCsv?: boolean, isStream?: boolean}} options contains custom parameters;
+ * @param {{throwable?: boolean, isCsv?: boolean, isStream?: boolean, directStream?: boolean, gid?: string}} options contains custom parameters;
  * @returns {Promise<Array>|Readable} array of objects; every array item is row from spreadsheet;
  * @throws {Promise<Error>}
  */
@@ -18,16 +19,21 @@ module.exports = async (spreadsheetId, options) => {
     throwable = false,
     isCsv = false,
     isStream = false,
+    directStream = false,
+    gid = null,
   } = (options && typeof options === 'object') ? options : {};
 
   throwable = !!throwable;
   isCsv = !!isCsv;
   isStream = !!isStream;
+  directStream = !!directStream;
+  gid = prepareGid(gid);
 
   if (
     !spreadsheetId ||
     typeof spreadsheetId !== 'string' ||
-    !spreadsheetId.length
+    !spreadsheetId.length ||
+    spreadsheetId.length > 256  // rough check but safe
   ) {
     return processError(ERROR.WRONG_ID, throwable);
   }
@@ -36,13 +42,21 @@ module.exports = async (spreadsheetId, options) => {
   let spreadsheetStream = null;
 
   try {
-    spreadsheetStream = await requestContent(spreadsheetId, throwable);
+    spreadsheetStream = await requestContent(spreadsheetId, {
+      throwable,
+      gid,
+    });
   } catch (error) {
     return processError(error, throwable);
   }
 
   if (!spreadsheetStream || typeof spreadsheetStream.pipe !== 'function') {
     return processError(ERROR.CANT_BE_READ, throwable);
+  }
+
+  // return direct stream of reading spreadsheet document
+  if (directStream) {
+    return spreadsheetStream;
   }
 
   // pull content from stream and put into variable

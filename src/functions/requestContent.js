@@ -1,19 +1,27 @@
 const axios = require('axios');
 const processError = require('./processError');
+const prepareUrl = require('./prepareUrl');
 const {ERROR} = require('../constants');
 
 /**
  * Retrieves spreadsheet content into readable stream.
  *
  * @param {string} spreadsheetId identifier of a Google spreadsheet document; see README.md for details;
- * @param {boolean} throwable defines if it's needed to throw exception or just return some result if some operation is wrong; default: false;
+ * @param {{throwable?: boolean, gid?: string}} options contains custom parameters;
  * @returns {Promise<Readable|Array>} in case of successful operation it will return readable stream, in opposite case - empty array;
  * @throws {Promise<Error>}
  */
-module.exports = async (spreadsheetId, throwable = false) => {
+module.exports = async (spreadsheetId, options) => {
+  const {
+    throwable = false,
+    gid = null,
+  } = options;
+
   let response = null;
   const requestOptions = {
-    url: `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=csv`,
+    url: prepareUrl(spreadsheetId, {
+      gid,
+    }),
     method: 'GET',
     responseType: 'stream',  // it's critically required for big content!
   };

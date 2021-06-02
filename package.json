@@ -1,7 +1,7 @@
 {
   "name": "read-spreadsheet",
-  "version": "2.0.0",
-  "description": "Reads a Google spreadsheet document by ID and returns content as an array of objects",
+  "version": "2.1.0",
+  "description": "Reads a Google spreadsheet document by ID and returns the content",
   "main": "index.js",
   "engines": {
     "node": ">=12"

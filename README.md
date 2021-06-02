@@ -1,6 +1,6 @@
 # Description
 
-Reads the first tab of a Google spreadsheet document and returns it as an array of objects.
+Reads the first or specified sheet of a Google spreadsheet document and returns the content as an array of objects or readable stream.
 
 # API
 
@@ -11,12 +11,16 @@ readSpreadsheet(spreadsheetId[, options]);
 where:
 - `spreadsheetId` is the ID of a **public** Google spreadsheet document. You can get it from here:
 
-![screenshot](docs/screenshot.png)
+![screenshot of spreadsheetId](docs/screenshot1.png)
 
 - `options` is an object which contain:
-  - `throwable` (optional) - defines if it's needed to throw an exception or just return an empty array if some operation can't be completed; default: `false`;
-  - `isCsv` (optional) - defines is content must be returned as CSV (if `true`) or JSON (if `false`); default: `false`;
-  - `isStream` (optional) - defines if content is represented as stream (if `true`) or stringified data (if `false`); default: `false`.
+  - `throwable` (boolean) - defines if it's needed to throw an exception or just return an empty result if some operation can't be completed; default: `false`;
+  - `isCsv` (boolean) - defines if content must be returned as CSV (if `true`) or JSON (if `false`); default: `false`;
+  - `isStream` (boolean) - defines if content is represented as a readable stream with processed data (if `true`) or just stringified data (if `false`); default: `false`;
+  - `directStream` (boolean) - defines if you need to receive a direct stream of reading spreadsheet document without any modifications as it is; ignores `isCsv` and `isStream` options; default: `false`;
+  - `gid` (string) - sets an ID of a sheet from a spreadsheet document; the 1st sheet is read if not set; default: `null`. You can get it from here:
+
+![screenshot of gid](docs/screenshot2.png)
 
 # Usage
 
@@ -35,9 +39,10 @@ where:
    const readSpreadsheet = require('read-spreadsheet');
    
    (async () => {
+     // use your real spreadsheet ID!
      const jsonContent = await readSpreadsheet('u193j19jr-q9ew8ur98urq-32uruwr1h2k3h1k');
    
-     // just to print it in readable format
+     // just to print it in the readable format
      console.log(JSON.stringify(jsonContent, null, 2));
    })();
    ```  
@@ -46,9 +51,7 @@ where:
    ```bash
    node ./index
    ```
-   **Note:**
-   
-   If you want to use debugger mode you should set this environment variable and run the code:
+   **Note:** If you want to use debugger mode you should set this environment variable and run the code:
    ```bash
    DEBUG=read-spreadsheet node ./index
    ```
@@ -69,3 +72,6 @@ You will get the same content as if none of the cells were merged. Instead of co
 
 ### 4. What if a spreadsheet document contains some images or diagrams?
 All graphic elements will be ignored and every such cell will contain just an empty string. 
+
+### 5. What if a spreadsheet sheet doesn't exist by "gid"?
+You will get an empty array.
