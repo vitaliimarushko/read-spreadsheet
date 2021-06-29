@@ -20,13 +20,14 @@ const handleError = (error, throwable = false) => {
  * Creates readable stream from provided data in array
  *
  * @param {Array} result data which must be presented as readable stream
- * @param {{throwable?: boolean, isCsv?: boolean}} options contains custom parameters;
+ * @param {{throwable?: boolean, isCsv?: boolean, eolType?: string}} options contains custom parameters;
  * @returns {Readable} readable stream
  */
 module.exports = (result, options) => {
   const {
     throwable = false,
     isCsv = false,
+    eolType = os.EOL,
   } = options;
 
   // create string data to put it into stream
@@ -36,7 +37,7 @@ module.exports = (result, options) => {
     if (!isCsv) {
       data = JSON.stringify(result, null, 2);
     } else {
-      data = result.map((r) => r.join(',')).join(os.EOL);
+      data = result.map((r) => r.join(',')).join(eolType);
     }
   } catch (error) {
     handleError(error, throwable);

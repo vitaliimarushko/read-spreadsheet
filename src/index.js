@@ -1,3 +1,4 @@
+const os = require('os');
 const processError = require('./functions/processError');
 const requestContent = require('./functions/requestContent');
 const collectData = require('./functions/collectData');
@@ -9,7 +10,7 @@ const {ERROR} = require('./constants');
  * Makes request to a Google spreadsheet document and retrieves its content.
  *
  * @param {string} spreadsheetId string ID which represents spreadsheet document;
- * @param {{throwable?: boolean, isCsv?: boolean, isStream?: boolean, directStream?: boolean, gid?: string}} options contains custom parameters;
+ * @param {{throwable?: boolean, isCsv?: boolean, isStream?: boolean, directStream?: boolean, eolType?: string, gid?: string}} options contains custom parameters;
  * @returns {Promise<Array>|Readable} array of objects; every array item is row from spreadsheet;
  * @throws {Promise<Error>}
  */
@@ -21,6 +22,7 @@ module.exports = async (spreadsheetId, options) => {
     isStream = false,
     directStream = false,
     gid = null,
+    eolType = os.EOL,
   } = (options && typeof options === 'object') ? options : {};
 
   throwable = !!throwable;
@@ -28,6 +30,7 @@ module.exports = async (spreadsheetId, options) => {
   isStream = !!isStream;
   directStream = !!directStream;
   gid = prepareGid(gid);
+  eolType = String(eolType).valueOf();
 
   if (
     !spreadsheetId ||
@@ -81,6 +84,7 @@ module.exports = async (spreadsheetId, options) => {
       result = createReadableStream(result, {
         throwable,
         isCsv,
+        eolType,
       });
     } catch (error) {
       return processError(ERROR.STREAM_ERROR, throwable);

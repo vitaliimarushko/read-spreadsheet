@@ -8,7 +8,7 @@ const {ERROR} = require('../constants');
  *
  * @param {string} spreadsheetId identifier of a Google spreadsheet document; see README.md for details;
  * @param {{throwable?: boolean, gid?: string}} options contains custom parameters;
- * @returns {Promise<Readable|Array>} in case of successful operation it will return readable stream, in opposite case - empty array;
+ * @returns {Promise<Array>|Readable} in case of successful operation it will return readable stream, in opposite case - empty array;
  * @throws {Promise<Error>}
  */
 module.exports = async (spreadsheetId, options) => {

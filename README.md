@@ -18,6 +18,7 @@ where:
   - `isCsv` (boolean) - defines if content must be returned as CSV (if `true`) or JSON (if `false`); default: `false`;
   - `isStream` (boolean) - defines if content is represented as a readable stream with processed data (if `true`) or just stringified data (if `false`); default: `false`;
   - `directStream` (boolean) - defines if you need to receive a direct stream of reading spreadsheet document without any modifications as it is; ignores `isCsv` and `isStream` options; default: `false`;
+  - `eolType` (string) - sets symbols for the end of line for CSV content if `isCsv = true` and `directStream = false`; default value is that which is relevant for OS where the package is being used;
   - `gid` (string) - sets an ID of a sheet from a spreadsheet document; the 1st sheet is read if not set; default: `null`. You can get it from here:
 
 ![screenshot of gid](docs/screenshot2.png)

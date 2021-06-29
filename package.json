@@ -1,6 +1,6 @@
 {
   "name": "read-spreadsheet",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Reads a Google spreadsheet document by ID and returns the content",
   "main": "index.js",
   "engines": {
