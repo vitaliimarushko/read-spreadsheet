@@ -23,12 +23,12 @@ const handleError = (error, throwable = false) => {
  * @param {{throwable?: boolean, isCsv?: boolean, eolType?: string}} options contains custom parameters;
  * @returns {Readable} readable stream
  */
-module.exports = (result, options) => {
+module.exports = (result, options = {}) => {
   const {
     throwable = false,
     isCsv = false,
     eolType = os.EOL,
-  } = options;
+  } = options || {};
 
   // create string data to put it into stream
   let data = DEFAULT_STRINGIFIED_DATA;

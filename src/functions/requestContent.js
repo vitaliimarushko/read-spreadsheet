@@ -11,11 +11,11 @@ const {ERROR} = require('../constants');
  * @returns {Promise<Array>|Readable} in case of successful operation it will return readable stream, in opposite case - empty array;
  * @throws {Promise<Error>}
  */
-module.exports = async (spreadsheetId, options) => {
+module.exports = async (spreadsheetId, options = {}) => {
   const {
     throwable = false,
     gid = null,
-  } = options;
+  } = options || {};
 
   let response = null;
   const requestOptions = {

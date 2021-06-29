@@ -7,11 +7,11 @@ const querystring = require('querystring');
  * @param {{format?: string, gid?: string | null}} options contains custom parameters;
  * @returns {string} prepared URL string
  */
-module.exports = (spreadsheetId, options) => {
+module.exports = (spreadsheetId, options = {}) => {
   const {
     format = 'csv',  // TODO: it needs to be utilized later
     gid = null,
-  } = options;
+  } = options || {};
 
   const queryParams = {
     format,  // format must be defined always!

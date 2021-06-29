@@ -35,11 +35,11 @@ const handleDone = (error, data, resolve, reject, throwable = false) => {
  * @returns {Promise<Array>} array of objects; every array item is row from spreadsheet;
  * @throws {Promise<Error>}
  */
-module.exports = (spreadsheetStream, options) => {
+module.exports = (spreadsheetStream, options = {}) => {
   const {
     throwable = false,
     isCsv = false,
-  } = options;
+  } = options || {};
 
   return new Promise((resolve, reject) => {
     const data = [];

@@ -14,7 +14,7 @@ const {ERROR} = require('./constants');
  * @returns {Promise<Array>|Readable} array of objects; every array item is row from spreadsheet;
  * @throws {Promise<Error>}
  */
-module.exports = async (spreadsheetId, options) => {
+module.exports = async (spreadsheetId, options = {}) => {
   // prepare incoming parameters
   let {
     throwable = false,
