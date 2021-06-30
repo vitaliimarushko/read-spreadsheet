@@ -1,5 +1,6 @@
 const csv = require('csvtojson');
 const debug = require('./getDebug');
+const isBrowser = require('./isBrowser');
 
 /**
  * Internal handler of "error" signal
@@ -28,14 +29,14 @@ const handleDone = (error, data, resolve, reject, throwable = false) => {
 };
 
 /**
- * Reads data from spreadsheet stream into CSV or JSON.
+ * Writes data into CSV or JSON.
  *
- * @param {IncomingMessage|Readable} spreadsheetStream readable stream to retrieve spreadsheet data;
+ * @param {IncomingMessage|Readable|string} spreadsheetContent spreadsheet data in different formats;
  * @param {{throwable?: boolean, isCsv?: boolean}} options contains custom parameters;
  * @returns {Promise<Array>} array of objects; every array item is row from spreadsheet;
  * @throws {Promise<Error>}
  */
-module.exports = (spreadsheetStream, options = {}) => {
+module.exports = (spreadsheetContent, options = {}) => {
   const {
     throwable = false,
     isCsv = false,
@@ -43,16 +44,23 @@ module.exports = (spreadsheetStream, options = {}) => {
 
   return new Promise((resolve, reject) => {
     const data = [];
+    const base = csv({
+      noheader: !!isCsv,
+      output: isCsv ? 'csv' : 'json',
+    });
 
     try {
-      csv({
-        noheader: !!isCsv,
-        output: isCsv ? 'csv' : 'json',
-      })
-        .fromStream(spreadsheetStream)
-        .on('error', (error) => handleError(error, resolve, reject, throwable))
-        .on('done', (error) => handleDone(error, data, resolve, reject, throwable))
-        .subscribe((chunk) => data.push(chunk));
+      if (isBrowser) {
+        base
+          .fromString(spreadsheetContent)
+          .then((csvRow) => resolve(csvRow));
+      } else {
+        base
+          .fromStream(spreadsheetContent)
+          .on('error', (error) => handleError(error, resolve, reject, throwable))
+          .on('done', (error) => handleDone(error, data, resolve, reject, throwable))
+          .subscribe((chunk) => data.push(chunk));
+      }
     } catch (error) {
       return handleError(error, resolve, reject, throwable);
     }

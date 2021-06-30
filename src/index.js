@@ -4,6 +4,7 @@ const requestContent = require('./functions/requestContent');
 const collectData = require('./functions/collectData');
 const createReadableStream = require('./functions/createReadableStream');
 const prepareGid = require('./functions/prepareGid');
+const isBrowser = require('./functions/isBrowser');
 const {ERROR} = require('./constants');
 
 /**
@@ -41,11 +42,11 @@ module.exports = async (spreadsheetId, options = {}) => {
     return processError(ERROR.WRONG_ID, throwable);
   }
 
-  // retrieve spreadsheet content as stream
-  let spreadsheetStream = null;
+  // retrieve spreadsheet content as stream or raw text
+  let spreadsheetContent = null;
 
   try {
-    spreadsheetStream = await requestContent(spreadsheetId, {
+    spreadsheetContent = await requestContent(spreadsheetId, {
       throwable,
       gid,
     });
@@ -53,20 +54,22 @@ module.exports = async (spreadsheetId, options = {}) => {
     return processError(error, throwable);
   }
 
-  if (!spreadsheetStream || typeof spreadsheetStream.pipe !== 'function') {
-    return processError(ERROR.CANT_BE_READ, throwable);
+  if (!spreadsheetContent) {
+    if (isBrowser || (typeof spreadsheetContent.pipe !== 'function')) {
+      return processError(ERROR.CANT_BE_READ, throwable);
+    }
   }
 
   // return direct stream of reading spreadsheet document
-  if (directStream) {
-    return spreadsheetStream;
+  if (!isBrowser && directStream) {
+    return spreadsheetContent;
   }
 
-  // pull content from stream and put into variable
+  // put content into variable depending on platform
   let result = [];
 
   try {
-    result = await collectData(spreadsheetStream, {
+    result = await collectData(spreadsheetContent, {
       throwable,
       isCsv,
     });
@@ -79,7 +82,7 @@ module.exports = async (spreadsheetId, options = {}) => {
   }
 
   // make stream from array data
-  if (isStream) {
+  if (!isBrowser && isStream) {
     try {
       result = createReadableStream(result, {
         throwable,
