@@ -9,7 +9,8 @@ const debug = require('./getDebug');
  * @throws {Error} instance of error which will be thrown if **throwable** is **true**.
  */
 module.exports = (error, throwable = false) => {
-  const errorMessage = error instanceof Error ? error.message : 'Internal handled error happened';
+  const errorMessage =
+    error instanceof Error ? error.message : 'Internal handled error happened';
 
   debug(errorMessage);
 

@@ -13,7 +13,7 @@ where:
 
 ![screenshot of spreadsheetId](docs/screenshot1.png)
 
-- `options` is an object which contain:
+- `options` is an object which can contain:
   - `throwable` (boolean) - defines if it's needed to throw an exception or just return an empty result if some operation can't be completed; default: `false`;
   - `isCsv` (boolean) - defines if content must be returned as CSV (if `true`) or JSON (if `false`); default: `false`;
   - `isStream` (boolean) - defines if content is represented as a readable stream with processed data (if `true`) or just stringified data (if `false`); default: `false`;

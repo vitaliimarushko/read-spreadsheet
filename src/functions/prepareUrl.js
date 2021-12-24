@@ -1,20 +1,17 @@
 const querystring = require('querystring');
+const {FORMAT} = require('../constants');
 
 /**
  * Prepares valid URL for requesting spreadsheet document data
  *
- * @param {string} spreadsheetId identifier of a Google spreadsheet document; see README.md for details;
- * @param {{format?: string, gid?: string | null}} options contains custom parameters;
+ * @param {string} spreadsheetId identifier of a Google spreadsheet document; see README.md for details
+ * @param {{format?: string, gid?: string | null}} options contains custom parameters
  * @returns {string} prepared URL string
  */
 module.exports = (spreadsheetId, options = {}) => {
-  const {
-    format = 'csv',  // TODO: it needs to be utilized later
-    gid = null,
-  } = options || {};
-
+  const {format = FORMAT.CSV, gid = null} = options || {};
   const queryParams = {
-    format,  // format must be defined always!
+    format, // format must be defined always!
   };
 
   // gid must be passed to query string only if it exists
@@ -22,5 +19,7 @@ module.exports = (spreadsheetId, options = {}) => {
     queryParams.gid = gid;
   }
 
-  return `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?${querystring.stringify(queryParams)}`;
+  return `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?${querystring.stringify(
+    queryParams,
+  )}`;
 };

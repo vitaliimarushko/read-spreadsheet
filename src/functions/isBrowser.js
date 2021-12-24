@@ -1,1 +1,2 @@
-module.exports = typeof window !== 'undefined' && typeof window.document !== 'undefined';
+module.exports =
+  typeof window !== 'undefined' && typeof window.document !== 'undefined';
