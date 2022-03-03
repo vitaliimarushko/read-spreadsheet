@@ -1,95 +1,32 @@
-const os = require('os');
-const processError = require('./functions/processError');
-const requestContent = require('./functions/requestContent');
-const collectData = require('./functions/collectData');
-const createReadableStream = require('./functions/createReadableStream');
-const prepareFormat = require('./functions/prepareFormat');
-const prepareGid = require('./functions/prepareGid');
-const isBrowser = require('./functions/isBrowser');
-const {ERROR, FORMAT} = require('./constants');
+const { isBrowser } = require('./helpers/is-browser.helper');
+const { prepareSpreadsheetId } = require('./helpers/prepare-spreadsheet-id.helper');
+const { prepareOptions } = require('./helpers/prepare-options.helper');
+const { requestContent } = require('./helpers/request-content.helper');
+const { convertCsv } = require('./helpers/convert-csv.helper');
+const { convertToStream } = require('./helpers/convert-to-stream.helper');
 
 /**
  * Makes request to a Google spreadsheet document and retrieves its content.
  *
- * @param {string} spreadsheetId string ID which represents spreadsheet document
- * @param {{throwable?: boolean, format?: 'csv' | 'array' | 'json', isStream?: boolean, gid?: string, eolType?: string}} options contains custom parameters
- * @returns {Promise<any> | Readable} spreadsheet content in chosen format
+ * @param {string | undefined} spreadsheetId identifier of a Google spreadsheet document; see README.md for details
+ * @param {{isJson?: boolean, gid?: string, isStream?: boolean}} options contains custom parameters
+ * @returns {Promise<Readable | any>} spreadsheet content in chosen format
  * @throws {Promise<Error>}
  */
 module.exports = async (spreadsheetId, options = {}) => {
   // prepare incoming parameters
-  let {
-    throwable = false,
-    format = FORMAT.CSV,
-    isStream = false,
-    gid = null,
-    eolType = os.EOL,
-  } = options && !Array.isArray(options) && typeof options === 'object'
-    ? options
-    : {};
+  spreadsheetId = prepareSpreadsheetId(spreadsheetId);
+  const { isJson, gid, isStream } = prepareOptions(options);
+  const spreadsheetContent = await requestContent(spreadsheetId, gid, isBrowser);
 
-  spreadsheetId = String(spreadsheetId).valueOf().trim();
-  throwable = !!throwable;
-  format = prepareFormat(format);
-  isStream = !!isStream;
-  gid = prepareGid(gid);
-  eolType = String(eolType).valueOf();
-
-  if (
-    !spreadsheetId.length ||
-    spreadsheetId.length > 256 // rough check but safe
-  ) {
-    return processError(ERROR.WRONG_ID, throwable);
-  }
-
-  // retrieve spreadsheet content as stream or raw text (depends on platform)
-  let spreadsheetContent = null;
-
-  try {
-    spreadsheetContent = await requestContent(spreadsheetId, {
-      throwable,
-      gid,
-    });
-  } catch (error) {
-    return processError(error, throwable);
-  }
-
-  if (
-    spreadsheetContent === null ||
-    (!isBrowser && typeof spreadsheetContent.pipe !== 'function')
-  ) {
-    return processError(ERROR.CANT_BE_READ, throwable);
-  }
-
-  // return direct stream of reading spreadsheet document
-  if (!isBrowser && isStream) {
+  // return default content for exact environment without data changing
+  if ((!isBrowser && isStream && !isJson) || (isBrowser && !isJson)) {
     return spreadsheetContent;
   }
 
-  // put content into variable depending on platform
-  let result = [];
+  // CSV content is converted to exact format
+  const convertedContent = await convertCsv(spreadsheetContent, isJson, isBrowser);
 
-  try {
-    result = await collectData(spreadsheetContent, {
-      throwable,
-      format,
-    });
-  } catch (error) {
-    return processError(error, throwable);
-  }
-
-  // make stream from data
-  if (!isBrowser && isStream) {
-    try {
-      result = createReadableStream(result, {
-        throwable,
-        format,
-        eolType,
-      });
-    } catch (error) {
-      return processError(ERROR.STREAM_ERROR, throwable);
-    }
-  }
-
-  return result;
+  // make stream for non-browser environment, otherwise just return data
+  return !isBrowser && isStream ? convertToStream(convertedContent) : convertedContent;
 };
