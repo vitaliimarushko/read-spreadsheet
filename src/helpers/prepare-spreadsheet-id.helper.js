@@ -6,13 +6,17 @@
  * @throws {Error}
  */
 const prepareSpreadsheetId = (spreadsheetId) => {
+  if (!spreadsheetId) {
+    // this value is critically important so without this value the process can't be continued
+    throw new Error('Spreadsheet document ID is wrong');
+  }
+
   spreadsheetId = String(spreadsheetId).valueOf().trim();
 
   if (
     !spreadsheetId.length ||
     spreadsheetId.length > 256 // rough check but safe
   ) {
-    // this value is critically important so without this value the process can't be continued
     throw new Error('Spreadsheet document ID is wrong');
   }
 

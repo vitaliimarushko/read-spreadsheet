@@ -1,13 +1,13 @@
-const stream = require('stream');
+const { Readable } = require('stream');
 
 /**
  * Creates readable stream from provided data
  *
- * @param {any} data data which must be presented as readable stream
+ * @param {object} data data which must be presented as readable stream
  * @returns {Readable} readable stream
  */
 const convertToStream = (data) => {
-  return stream.Readable.from(Buffer.from(data).toString());
+  return Readable.from(JSON.stringify(data));
 };
 
 module.exports = {

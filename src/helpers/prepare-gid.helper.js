@@ -8,13 +8,13 @@ const prepareGid = (gid) => {
   try {
     gid = String(gid).valueOf();
   } catch (error) {
-    gid = null;
+    return null;
   }
 
   if (gid && gid !== 'null') {
     gid = gid.toString().substring(0, 36); // just to make a gid with some short value
   } else {
-    gid = null;
+    return null;
   }
 
   return gid;

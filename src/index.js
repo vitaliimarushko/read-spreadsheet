@@ -10,7 +10,7 @@ const { convertToStream } = require('./helpers/convert-to-stream.helper');
  *
  * @param {string | undefined} spreadsheetId identifier of a Google spreadsheet document; see README.md for details
  * @param {{isJson?: boolean, gid?: string, isStream?: boolean}} options contains custom parameters
- * @returns {Promise<Readable | any>} spreadsheet content in chosen format
+ * @returns {Promise<Readable<Record<string, string>[] | string[][]> | Record<string, string>[] | string[][]>} spreadsheet content in chosen format
  * @throws {Promise<Error>}
  */
 module.exports = async (spreadsheetId, options = {}) => {
@@ -19,10 +19,11 @@ module.exports = async (spreadsheetId, options = {}) => {
   const { isJson, gid, isStream } = prepareOptions(options);
   const spreadsheetContent = await requestContent(spreadsheetId, gid, isBrowser);
 
+  // TODO: temporary hidden
   // return default content for exact environment without data changing
-  if ((!isBrowser && isStream && !isJson) || (isBrowser && !isJson)) {
-    return spreadsheetContent;
-  }
+  // if ((!isBrowser && isStream && !isJson) || (isBrowser && !isJson)) {
+  //   return spreadsheetContent;
+  // }
 
   // CSV content is converted to exact format
   const convertedContent = await convertCsv(spreadsheetContent, isJson, isBrowser);
