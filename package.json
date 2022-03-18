@@ -11,7 +11,7 @@
   "scripts": {
     "format": "./node_modules/.bin/prettier --write 'src/**/*.js' --write 'tests/**/*.js'",
     "upd": "./node_modules/.bin/ncu -u && npm i && npm audit fix && npm i",
-    "test": "./node_modules/.bin/mocha --recursive './tests/**/*.js' --timeout 3000"
+    "test": "./node_modules/.bin/mocha --recursive './tests/**/*.js' --timeout 5000"
   },
   "repository": {
     "type": "git",

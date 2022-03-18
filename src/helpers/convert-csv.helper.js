@@ -23,32 +23,24 @@ const handleDone = (error, data, resolve, reject) => {
  * Writes data into CSV, array or JSON.
  *
  * @param {Readable|string} spreadsheetContent spreadsheet data in different formats;
- * @param {boolean} isJson sets if you need to convert into json instead of "csv"; default: "csv"
- * @param {boolean} isBrowser defines the environment
+ * @param {boolean} isArray sets if you need to convert into JSON array instead of JSON object; default: false
  * @returns {Promise<string|Array|object>} CSV string, or array of objects (every array item is row from spreadsheet) or JSON object;
  * @throws {Promise<Error>}
  */
-const convertCsv = async (spreadsheetContent, isJson = false, isBrowser = false) => {
+const convertCsv = async (spreadsheetContent, isArray = false) => {
   const data = [];
   const base = csv({
-    noheader: !isJson,
-    output: isJson ? 'json' : 'csv',
+    noheader: !!isArray,
+    output: !isArray ? 'json' : 'csv',
   });
 
   return new Promise((resolve, reject) => {
     try {
-      if (isBrowser) {
-        base
-          .fromString(spreadsheetContent)
-          .then((csvRow) => handleDone(null, csvRow, resolve, reject))
-          .catch((error) => handleError(error, resolve, reject));
-      } else {
-        base
-          .fromStream(spreadsheetContent)
-          .on('error', (error) => handleError(error, resolve, reject))
-          .on('done', (error) => handleDone(error, data, resolve, reject))
-          .subscribe((chunk) => data.push(chunk));
-      }
+      base
+        .fromStream(spreadsheetContent)
+        .on('error', (error) => handleError(error, resolve, reject))
+        .on('done', (error) => handleDone(error, data, resolve, reject))
+        .subscribe((chunk) => data.push(chunk));
     } catch (error) {
       return handleError(error, resolve, reject);
     }

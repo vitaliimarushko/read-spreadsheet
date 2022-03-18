@@ -1,6 +1,7 @@
 # Description
 
-Reads any sheet of a Google spreadsheet document and returns the content as CSV or an array of objects.
+Reads any sheet of a Google spreadsheet document and returns the content as JSON data. Only supports of **Node.js**
+environment.
 
 # API
 
@@ -16,8 +17,8 @@ where:
   ![screenshot of spreadsheetId](docs/screenshot1.png)
 
 - `options` is an object which can contain:
-    - `isJson` (boolean) - defines if content must be returned as JSON (if `true`) or CSV (if `false`); default: `false`
-      ;
+    - `isArray` (boolean) - defines if content must be returned as JSON array (if `true`) or JSON object (if `false`);
+      default: `false`;
     - `gid` (string) - sets an ID of a sheet from a spreadsheet document; the 1st sheet is read if not set;
       default: `null`. You can get it from here:
       ![screenshot of gid](docs/screenshot2.png)
@@ -53,28 +54,6 @@ where:
    ```bash
    node ./index.js
    ```
-
-> **Notice!**
->
-> For the browser environment you just need using `import` statement instead of `require` function.
-
-# Compatibility
-
-For **browser** environment:
-
-| Options  | isJson | gid | isStream |
-|----------|:------:|:---:|:--------:|
-| isJson   |   +    |  +  |    -     |
-| gid      |   +    |  +  |    -     |
-| isStream |   -    |  -  |    -     |
-
-For **Node.js** environment:
-
-| Options  | isJson | gid | isStream |
-|----------|:------:|:---:|:--------:|
-| isJson   |   +    |  +  |    +     |
-| gid      |   +    |  +  |    +     |
-| isStream |   +    |  +  |    +     |
 
 # FAQ
 
