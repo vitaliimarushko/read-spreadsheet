@@ -6,9 +6,7 @@ const { Readable } = require('stream');
  * @param {object} data data which must be presented as readable stream
  * @returns {Readable} readable stream
  */
-const convertToStream = (data) => {
-  return Readable.from(JSON.stringify(data));
-};
+const convertToStream = (data) => Readable.from(data);
 
 module.exports = {
   convertToStream,

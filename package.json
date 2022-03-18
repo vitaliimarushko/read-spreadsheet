@@ -9,9 +9,9 @@
   "author": "Vitalii Marushko",
   "license": "MIT",
   "scripts": {
-    "format": "./node_modules/.bin/prettier --write 'src/**/*.js'",
+    "format": "./node_modules/.bin/prettier --write 'src/**/*.js' --write 'tests/**/*.js'",
     "upd": "./node_modules/.bin/ncu -u && npm i && npm audit fix && npm i",
-    "test": "jest"
+    "test": "./node_modules/.bin/mocha --recursive './tests/**/*.js' --timeout 3000"
   },
   "repository": {
     "type": "git",
@@ -37,8 +37,8 @@
     "eslint": "^8.11.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "jest": "^27.5.1",
-    "npm-check-updates": "^12.5.3",
-    "prettier": "^2.5.1"
+    "mocha": "^9.2.2",
+    "npm-check-updates": "^12.5.4",
+    "prettier": "^2.6.0"
   }
 }

@@ -19,12 +19,6 @@ module.exports = async (spreadsheetId, options = {}) => {
   const { isJson, gid, isStream } = prepareOptions(options);
   const spreadsheetContent = await requestContent(spreadsheetId, gid, isBrowser);
 
-  // TODO: temporary hidden
-  // return default content for exact environment without data changing
-  // if ((!isBrowser && isStream && !isJson) || (isBrowser && !isJson)) {
-  //   return spreadsheetContent;
-  // }
-
   // CSV content is converted to exact format
   const convertedContent = await convertCsv(spreadsheetContent, isJson, isBrowser);
 
